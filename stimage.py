@@ -11,9 +11,9 @@ from control.stage import Stage
 from control.camera import camera_full
 
 # Constants
-CAPILLARY_LENGTH = 18000 # for 100mm capillary
+CAPILLARY_LENGTH = 14400 # for 100mm capillary
 CAPILLARY_X_INTERVAL = 1800
-CAPILLARY_Y_INTERVAL = 2400
+CAPILLARY_Y_INTERVAL = 3000
 
 def initialize_stage():
     '''Initialize stage'''

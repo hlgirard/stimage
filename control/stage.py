@@ -31,8 +31,8 @@ class Stage:
         self.posY = 0
 
         # Axis length
-        self.maxX = 40000 # X-axis length
-        self.maxY = 30000 # Y-axis length
+        self.maxX = 39000 # X-axis length
+        self.maxY = 23000 # Y-axis length
 
         # Initialization interlock
         self.is_initialized = True # FIXME: False in normal operation, True for debug only
