@@ -35,7 +35,7 @@ class Stage:
         self.maxY = 23000 # Y-axis length
 
         # Initialization interlock
-        self.is_initialized = True # FIXME: False in normal operation, True for debug only
+        self.is_initialized = False
         if self.is_initialized:
             logging.warning("Stage is not initialized, proceed with caution, DEBUG only.")
 
@@ -136,11 +136,11 @@ class Stage:
         '''Make sure stage is initialized and requested position is within the bounds'''
 
         if not self.is_initialized:
-            print("Initialize stage to get X and Y coordinate references.")
+            logging.warning("Initialize stage to get X and Y coordinate references before moving.")
             return False
 
         if newX > self.maxX or newX < 0 or newY > self.maxY or newY < 0:
-            print("Requested position out of bounds")
+            logging.debug("Requested position out of bounds")
             return False
 
         return True
