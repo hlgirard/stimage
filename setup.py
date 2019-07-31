@@ -14,9 +14,6 @@ setup(name='stimage',
       packages=find_packages(exclude=["tests.*", "tests"]),
       install_requires=[
           'click',
-          'opencv-python',
-          'adafruit_motorkit',
-          'adafruit_motor',
           'gpiozero',
           'tqdm'
       ],
