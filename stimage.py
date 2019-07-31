@@ -11,7 +11,7 @@ from control.stage import Stage
 from control.camera import camera_full
 
 # Constants
-CAPILLARY_LENGTH = 14400 # for 100mm capillary
+CAPILLARY_LENGTH = 18000 # for 100mm capillary
 CAPILLARY_X_INTERVAL = 1800
 CAPILLARY_Y_INTERVAL = 2400
 
@@ -42,11 +42,9 @@ def main(duration, directory, stage=None, bCheckAlignment=False, n_tubes=1):
     if not stage:
         stage = initialize_stage()
 
-    # Wait for user to align the start position
-    click.pause(info='READY - Align stage to the back left corner and press any key to continue...')
-
     # Check alignment if requested
     if bCheckAlignment:
+        click.pause(info='ALIGNEMENT - Align stage to the back left corner and press any key to continue...')
         check_alignment(stage)
 
     # Start imaging loop
@@ -73,7 +71,7 @@ def main(duration, directory, stage=None, bCheckAlignment=False, n_tubes=1):
                             jobs.pop().join()
 
                         # Capture and save a new image
-                        filename = os.path.join(directory, datetime.datetime.now().strftime("%y%m%d_%H%M") + '_x{}_y{}_seq{}_CrystKinetics.jpg'.format(j, i, seq_nb))
+                        filename = os.path.join(directory, datetime.datetime.now().strftime("%y%m%d_%H%M%S") + '_x{}_y{}_seq{}_CrystKinetics.jpg'.format(j, i, seq_nb))
                         p = multiprocessing.Process(target=camera_full, args=(filename,))
                         jobs.append(p)
                         p.start()
@@ -91,10 +89,11 @@ def main(duration, directory, stage=None, bCheckAlignment=False, n_tubes=1):
                         bar_time.update(t_now-t_int)
                         t_int = t_now
 
-                    stage.moveY(CAPILLARY_Y_INTERVAL)
+                    if i < n_tubes-1:
+                        stage.moveY(CAPILLARY_Y_INTERVAL)
         
-        stage.goto(x0, y0)
-        seq_nb += 1
+            stage.goto(x0, y0)
+            seq_nb += 1
 
     logging.info("Capture done.")
 

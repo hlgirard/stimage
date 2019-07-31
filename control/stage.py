@@ -77,7 +77,7 @@ class Stage:
         if not self._check_move_valid(x, y):
             return
 
-        logging.info("Moving to position %d, %d", x, y)
+        logging.debug("Moving to position %d, %d", x, y)
 
         # Move X axis
         self.moveX(x-self.posX)
