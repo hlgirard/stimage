@@ -6,7 +6,7 @@ from adafruit_motor import stepper
 kit = MotorKit()
 
 # Get reference to stepper 1
-stp = kit.stepper1
+stp = kit.stepper2
 
 # One complete revolution (200 steps)
 for i in range(200):
