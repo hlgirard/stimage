@@ -52,14 +52,14 @@ class Stage:
         # Initialize X axis
         while not self.limXMaxBut.is_pressed:
             self.moveX(200, override=True)
-        self.moveX(-400, override=True)
+        self.moveX(-800, override=True)
         self.posX = self.maxX
 
 
         # Initialize Y axis
         while not self.limYMinBut.is_pressed:
             self.moveY(-200, override=True)
-        self.moveY(400, override=True)
+        self.moveY(800, override=True)
         self.posY = 0
 
         self.is_initialized = True
