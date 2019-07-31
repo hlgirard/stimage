@@ -11,9 +11,9 @@ from control.stage import Stage
 from control.camera import camera_full
 
 # Constants
-CAPILLARY_LENGTH = 20000 # FIXME: length of capillary in stepper steps
-CAPILLARY_X_INTERVAL = 1000 # FIXME: distance between pictures along the X-axis
-CAPILLARY_Y_INTERVAL = 1500 # FIXME: Interval along Y-direction between two capillaries
+CAPILLARY_LENGTH = 14400 # for 100mm capillary
+CAPILLARY_X_INTERVAL = 1800
+CAPILLARY_Y_INTERVAL = 2400
 
 def initialize_stage():
     '''Initialize stage'''
