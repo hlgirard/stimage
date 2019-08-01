@@ -1,5 +1,4 @@
 import logging
-from time import sleep
 
 from adafruit_motorkit import MotorKit
 from adafruit_motor import stepper
@@ -47,6 +46,8 @@ class Stage:
         self.stepperY.release()
 
     def initialize_stage(self):
+
+        logging.info("Initializing stage.")
 
         # Initialize X axis
         while not self.limXMaxBut.is_pressed:
