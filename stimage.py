@@ -7,9 +7,9 @@ from control.stage import Stage
 from control.camera import Camera
 
 # Constants
-CAPILLARY_LENGTH = 20000 # FIXME length of capillary in stepper steps
-CAPILLARY_X_INTERVAL = 1000 # FIXME distance between pictures along the X-axis
-CAPILLARY_Y_INTERVAL = 1500 # FIXME Interval along Y-direction between two capillaries
+CAPILLARY_LENGTH = 20000 # FIXME: length of capillary in stepper steps
+CAPILLARY_X_INTERVAL = 1000 # FIXME: distance between pictures along the X-axis
+CAPILLARY_Y_INTERVAL = 1500 # FIXME: Interval along Y-direction between two capillaries
 
 def initialize_stage():
     '''Initialize stage'''
@@ -63,21 +63,25 @@ def main(stage=None, camera=None, bCheckAlignment=False, n_tubes=1, duration):
     t_end = time() + duration * 3600 # t_end in unix seconds
     seq_nb = 1 # Sequence number
 
-    # TODO: Add progress bar
-
     while (time() < t_end) or (duration == -1):
-        for i in range(n_tubes):
-            for j in range(n_img_per_tube):
+        with click.progressbar(length=i*j, label="#{}".format(seq_nb)) as bar:
+            for i in range(n_tubes):
+                for j in range(n_img_per_tube):
 
-                # Goto imaging position
-                stage.goto(x0 + j*CAPILLARY_X_INTERVAL, y0 + i*CAPILLARY_Y_INTERVAL)
+                    # Goto imaging position
+                    direction = 1 if i % 2 == 0 else -1
+                    stage.moveX(direction * CAPILLARY_X_INTERVAL)
 
-                # Capture an image and save it
-                # TODO: Add experiment name option?
-                filename = datetime.datetime.now().strftime("%y%m%d_%H%M") + 
-                        '_x{}_y{}_seq{}_CrystKinetics.jpg'.format(j, i, seq_nb)
-                camera.capture(filename)
+                    # Capture an image and save it
+                    # TODO: Add experiment name option?
+                    filename = datetime.datetime.now().strftime("%y%m%d_%H%M") + 
+                            '_x{}_y{}_seq{}_CrystKinetics.jpg'.format(j, i, seq_nb)
+                    camera.capture(filename)
+                    bar.update(1)
+
+                stage.moveY(-1 * CAPILLARY_Y_INTERVAL)
         
+        stage.goto(x0,y0)
         seq_nb += 1
 
     logging.info("Capture done.")
