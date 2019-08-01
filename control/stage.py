@@ -1,5 +1,4 @@
 import logging
-from time import sleep
 
 from adafruit_motorkit import MotorKit
 from adafruit_motor import stepper
@@ -40,19 +39,28 @@ class Stage:
         if self.is_initialized:
             logging.warning("Stage is not initialized, proceed with caution, DEBUG only.")
 
+    def __del__(self):
+        '''Releases stepper motors on destroy'''
+        logging.debug("Destroying Stage object. Releasing both steppers.")
+        self.stepperX.release()
+        self.stepperY.release()
+
     def initialize_stage(self):
+
+        logging.info("Initializing stage.")
 
         # Initialize X axis
         while not self.limXMaxBut.is_pressed:
-            self.moveX(200)
+            self.moveX(200, override=True)
+        self.moveX(-400, override=True)
         self.posX = self.maxX
-        self.moveX(-400)
+        
 
         # Initialize Y axis
         while not self.limYMinBut.is_pressed:
-            self.moveY(-200)
+            self.moveY(-200, override=True)
+        self.moveY(400, override=True)
         self.posY = 0
-        self.moveY(400)
 
         self.is_initialized = True
 
@@ -73,10 +81,10 @@ class Stage:
         # Move Y axis
         self.moveY(y-self.posY)
 
-    def moveX(self, n_steps):
+    def moveX(self, n_steps, override=False):
         '''Move stage along the X axis for n_steps'''
 
-        if not self._check_move_valid(self.posX + n_steps, self.posY):
+        if not self._check_move_valid(self.posX + n_steps, self.posY) and not override:
             return
 
         try:
@@ -91,13 +99,12 @@ class Stage:
                     self.posX += -1
 
         finally:
-            logging.debug("Released X stepper")
             self.stepperX.release()
 
-    def moveY(self, n_steps):
+    def moveY(self, n_steps, override=False):
         '''Move stage along the Y axis for n_steps'''
 
-        if not self._check_move_valid(self.posX, self.posY + n_steps):
+        if not self._check_move_valid(self.posX, self.posY + n_steps) and not override:
             return
 
         try:
@@ -112,7 +119,6 @@ class Stage:
                     self.posY += -1
 
         finally:
-            logging.debug("Released Y stepper")
             self.stepperY.release()
 
     def release(self):
