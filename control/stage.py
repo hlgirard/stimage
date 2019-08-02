@@ -12,7 +12,7 @@ class Stage:
 
     def __init__(self):
         '''Initialize stepper motors and get references to limit switches'''
-        
+
         # Get references to stepper motors
         self.kit = MotorKit()
         self.stepperX = self.kit.stepper1
@@ -54,7 +54,7 @@ class Stage:
             self.moveX(200, override=True)
         self.moveX(-400, override=True)
         self.posX = self.maxX
-        
+
 
         # Initialize Y axis
         while not self.limYMinBut.is_pressed:

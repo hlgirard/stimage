@@ -18,6 +18,7 @@ setup(name='stimage',
           'adafruit_motorkit',
           'adafruit_motor',
           'gpiozero',
+          'tqdm'
       ],
       entry_points={
           'console_scripts': [
@@ -26,3 +27,4 @@ setup(name='stimage',
       },
       zip_safe=False,
       include_package_data=True)
+      

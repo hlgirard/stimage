@@ -1,8 +1,10 @@
-import click
 import datetime
 import os
 import logging
-from time import sleep, time
+from time import time
+
+import click
+from tqdm import tqdm
 
 from control.stage import Stage
 from control.camera import Camera
@@ -54,7 +56,7 @@ def main(duration, directory, stage=None, camera=None, bCheckAlignment=False, n_
     # Check alignment if requested
     if bCheckAlignment:
         check_alignment(stage)
-    
+
     # Start imaging loop
     x0 = stage.posX
     y0 = stage.posY
@@ -63,28 +65,33 @@ def main(duration, directory, stage=None, camera=None, bCheckAlignment=False, n_
 
     click.pause("READY - Press any key to start...")
 
-    t_end = time() + duration * 3600 # t_end in unix seconds
+    t_end = int(time() + duration * 3600) # t_end in unix seconds
+    t_int = int(time())
     seq_nb = 1 # Sequence number
 
-    while (time() < t_end) or (duration == -1):
-        with click.progressbar(length=n_tubes*n_img_per_tube, label="#{}".format(seq_nb)) as bar:
-            for i in range(n_tubes):
-                for j in range(n_img_per_tube):
+    with tqdm(desc='Time', position=0, leave=True, total=int(t_end-t_int), disable=(duration == -1)) as bar_time:
+        while (time() < t_end) or (duration == -1):
+            with tqdm(total=n_tubes*n_img_per_tube, desc="Run #{}".format(seq_nb), position=1, leave=False) as bar_run:
+                for i in range(n_tubes):
+                    for j in range(n_img_per_tube):
 
-                    # Capture an image and save it
-                    filename = os.path.join(directory,datetime.datetime.now().strftime("%y%m%d_%H%M") + '_x{}_y{}_seq{}_CrystKinetics.jpg'.format(j, i, seq_nb))
-                    camera.capture(filename)
+                        # Capture an image and save it
+                        filename = os.path.join(directory, datetime.datetime.now().strftime("%y%m%d_%H%M") + '_x{}_y{}_seq{}_CrystKinetics.jpg'.format(j, i, seq_nb))
+                        camera.capture(filename)
 
-                    # Goto next imaging position
-                    direction = -1 if i % 2 == 0 else 1
-                    stage.moveX(direction * CAPILLARY_X_INTERVAL)
+                        # Goto next imaging position
+                        direction = -1 if i % 2 == 0 else 1
+                        stage.moveX(direction * CAPILLARY_X_INTERVAL)
 
-                    # Update progress bar
-                    bar.update(1)
+                        # Update progress bars
+                        bar_run.update(1)
+                        t_now = int(time())
+                        bar_time.update(t_now-t_int)
+                        t_int = t_now
 
-                stage.moveY(CAPILLARY_Y_INTERVAL)
+                    stage.moveY(CAPILLARY_Y_INTERVAL)
         
-        stage.goto(x0,y0)
+        stage.goto(x0, y0)
         seq_nb += 1
 
     logging.info("Capture done.")
