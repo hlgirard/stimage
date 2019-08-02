@@ -91,13 +91,13 @@ def main(duration, directory, stage=None, camera=None, bCheckAlignment=False, n_
 
 
 @click.command()
-@click.version_option(version=0.1, prog_name='stimage')
+@click.version_option()
 @click.option('-v', '--verbose', count=True, help='Increse verbosity')
 @click.option('-c', '--check', is_flag=True, help='Check alignment of the stage before starting')
 @click.option('-n', '--tubes', default=1, help='Number of tubes to image')
-@click.option('-t', '--time', default=1, help='Total duration of experiment in hours. -1 for unlimitted.')
+@click.option('-t', '--tot-time', default=1, help='Total duration of experiment in hours. -1 for unlimitted.')
 @click.argument('directory', type=click.Path(), required=True)
-def cli(directory, verbose, check, tubes, time):
+def cli(directory, verbose, check, tubes, tot_time):
 
     # Setup logging
     if verbose == 0:
@@ -111,7 +111,7 @@ def cli(directory, verbose, check, tubes, time):
     if not os.path.isdir(directory):
         os.mkdir(directory)
 
-    main(bCheckAlignment=check, n_tubes=tubes, directory=directory, duration=time)
+    main(bCheckAlignment=check, n_tubes=tubes, directory=directory, duration=tot_time)
 
 
 if __name__ == '__main__':
