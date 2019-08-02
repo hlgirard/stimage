@@ -72,7 +72,6 @@ def main(duration, directory, stage=None, camera=None, bCheckAlignment=False, n_
                 for j in range(n_img_per_tube):
 
                     # Capture an image and save it
-                    # TODO: Add experiment name option?
                     filename = os.path.join(directory,datetime.datetime.now().strftime("%y%m%d_%H%M") + '_x{}_y{}_seq{}_CrystKinetics.jpg'.format(j, i, seq_nb))
                     camera.capture(filename)
 
@@ -97,7 +96,7 @@ def main(duration, directory, stage=None, camera=None, bCheckAlignment=False, n_
 @click.option('-c', '--check', is_flag=True, help='Check alignment of the stage before starting')
 @click.option('-n', '--tubes', default=1, help='Number of tubes to image')
 @click.option('-t', '--time', default=1, help='Total duration of experiment in hours. -1 for unlimitted.')
-@click.argument('directory', type=click.Path(exists=True), required=True)
+@click.argument('directory', type=click.Path(), required=True)
 def cli(directory, verbose, check, tubes, time):
 
     # Setup logging
@@ -107,6 +106,10 @@ def cli(directory, verbose, check, tubes, time):
         logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(message)s')
     elif verbose > 1:
         logging.basicConfig(level=logging.DEBUG, format='%(levelname)s - %(message)s')
+
+    # Make directory if it does not exist
+    if not os.path.isdir(directory):
+        os.mkdir(directory)
 
     main(bCheckAlignment=check, n_tubes=tubes, directory=directory, duration=time)
 

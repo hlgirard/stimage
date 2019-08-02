@@ -64,6 +64,10 @@ class Stage:
 
         self.is_initialized = True
 
+        # Enable safety callback that shuts the stage down if either button is pressed
+        #self.limXMaxBut.when_pressed(self._safe_shutdown)
+        #self.limYMinBut.when_pressed(self._safe_shutdown)
+
         logging.info("Stage initialized")
 
 
@@ -80,6 +84,7 @@ class Stage:
 
         # Move Y axis
         self.moveY(y-self.posY)
+
 
     def moveX(self, n_steps, override=False):
         '''Move stage along the X axis for n_steps'''
@@ -139,3 +144,8 @@ class Stage:
             return False
 
         return True
+
+    def _safe_shutdown(self):
+        self.stepperX.release()
+        self.stepperY.release()
+        raise IOError("An error has occured, shutting down stage.")
