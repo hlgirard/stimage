@@ -1,13 +1,14 @@
 import datetime
+import multiprocessing
 import os
 import logging
-from time import time
+from time import time, sleep
 
 import click
 from tqdm import tqdm
 
 from control.stage import Stage
-from control.camera import Camera
+from control.camera import camera_full
 
 # Constants
 CAPILLARY_LENGTH = 20000 # FIXME: length of capillary in stepper steps
@@ -23,11 +24,6 @@ def initialize_stage():
 
     return stage
 
-def initialize_camera():
-    '''Initialize camera connection'''
-
-    return Camera()
-
 def check_alignment(stage):
     '''Moves the stage to check that the capillary holder is correcly aligned and the focus is satisfactory'''
     stage.moveX(-15000)
@@ -40,11 +36,7 @@ def check_alignment(stage):
     return
 
 
-def main(duration, directory, stage=None, camera=None, bCheckAlignment=False, n_tubes=1):
-
-    # Initialize camera
-    if not camera:
-        camera = initialize_camera()
+def main(duration, directory, stage=None, bCheckAlignment=False, n_tubes=1):
 
     # Initialize stage
     if not stage:
@@ -68,6 +60,7 @@ def main(duration, directory, stage=None, camera=None, bCheckAlignment=False, n_
     t_end = int(time() + duration * 3600) # t_end in unix seconds
     t_int = int(time())
     seq_nb = 1 # Sequence number
+    jobs = []
 
     with tqdm(desc='Time', position=0, leave=True, total=int(t_end-t_int), disable=(duration == -1)) as bar_time:
         while (time() < t_end) or (duration == -1):
@@ -75,9 +68,18 @@ def main(duration, directory, stage=None, camera=None, bCheckAlignment=False, n_
                 for i in range(n_tubes):
                     for j in range(n_img_per_tube):
 
-                        # Capture an image and save it
+                        # Wait for previous camera download to finish, if any
+                        if jobs:
+                            jobs.pop().join()
+
+                        # Capture and save a new image
                         filename = os.path.join(directory, datetime.datetime.now().strftime("%y%m%d_%H%M") + '_x{}_y{}_seq{}_CrystKinetics.jpg'.format(j, i, seq_nb))
-                        camera.capture(filename)
+                        p = multiprocessing.Process(target=camera_full, args=(filename,))
+                        jobs.append(p)
+                        p.start()
+
+                        # Wait until capture is done
+                        sleep(1.1)
 
                         # Goto next imaging position
                         direction = -1 if i % 2 == 0 else 1

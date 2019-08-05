@@ -24,3 +24,21 @@ class Camera:
             raise IOError("Cannot receive frame. Make sure camera is on and connected.")
 
         cv2.imwrite(savepath, frame)
+
+def camera_full(savepath):
+    # Select the first available camera device
+    cam = cv2.VideoCapture(0)
+
+    # Make sure camera is opened
+    if not cam.isOpened():
+        raise IOError("Failed to access camera. Make sure it is connected and powered on.")
+
+    ret, frame = cam.read()
+
+    # ret is True if the frame was correctly received, False otherwise
+    if not ret:
+        raise IOError("Cannot receive frame. Make sure camera is on and connected.")
+
+    cv2.imwrite(savepath, frame)
+
+    cam.release()
