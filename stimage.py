@@ -1,5 +1,5 @@
 import datetime
-import multiprocessing
+from multiprocessing import Pool
 import os
 import logging
 from time import time, sleep
@@ -57,8 +57,11 @@ def main(duration, directory, stage=None, bCheckAlignment=False, n_tubes=1):
 
     t_end = int(time() + duration * 3600) # t_end in unix seconds
     t_int = int(time())
-    seq_nb = 1 # Sequence number
-    jobs = []
+    seq_nb = 0 # Sequence number
+
+    # Create a pool of 1 worker
+    pool = Pool(processes=1)
+    async_work = None
 
     with tqdm(desc='Time', position=0, leave=True, total=int(t_end-t_int), disable=(duration == -1)) as bar_time:
         while (time() < t_end) or (duration == -1):
@@ -67,17 +70,15 @@ def main(duration, directory, stage=None, bCheckAlignment=False, n_tubes=1):
                     for j in range(n_img_per_tube):
 
                         # Wait for previous camera download to finish, if any
-                        if jobs:
-                            jobs.pop().join()
+                        if async_work:
+                            async_work.wait()
 
                         # Capture and save a new image
                         filename = os.path.join(directory, datetime.datetime.now().strftime("%y%m%d_%H%M%S") + '_x{}_y{}_seq{}_CrystKinetics.jpg'.format(j, i, seq_nb))
-                        p = multiprocessing.Process(target=camera_full, args=(filename,))
-                        jobs.append(p)
-                        p.start()
+                        async_work = pool.apply_async(camera_full, (filename,))
 
                         # Wait until capture is done
-                        sleep(1.1)
+                        sleep(1.1) # FIXME: Correct time offset if necessary.
 
                         # Goto next imaging position
                         direction = -1 if i % 2 == 0 else 1
@@ -100,9 +101,9 @@ def main(duration, directory, stage=None, bCheckAlignment=False, n_tubes=1):
 
 @click.command()
 @click.version_option()
-@click.option('-v', '--verbose', count=True, help='Increse verbosity')
+@click.option('-v', '--verbose', count=True, help='Increase verbosity')
 @click.option('-c', '--check', is_flag=True, help='Check alignment of the stage before starting')
-@click.option('-n', '--tubes', default=1, help='Number of tubes to image')
+@click.option('-n', '--tubes', default=1, help='Number of tubes to image. Default 1')
 @click.option('-t', '--tot-time', default=1, help='Total duration of experiment in hours. -1 for unlimitted.')
 @click.argument('directory', type=click.Path(), required=True)
 def cli(directory, verbose, check, tubes, tot_time):
