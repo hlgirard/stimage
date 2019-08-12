@@ -13,7 +13,7 @@ from control.camera import camera_full
 # Constants
 CAPILLARY_LENGTH = 14400 # for 100mm capillary
 CAPILLARY_X_INTERVAL = 1800
-CAPILLARY_Y_INTERVAL = 3000
+CAPILLARY_Y_INTERVAL = 3200
 
 def initialize_stage():
     '''Initialize stage'''
@@ -26,11 +26,11 @@ def initialize_stage():
 
 def check_alignment(stage):
     '''Moves the stage to check that the capillary holder is correcly aligned and the focus is satisfactory'''
-    stage.moveX(-15000)
+    stage.moveX(-10000)
     click.pause(info='Check alignment and focus. Press any key to move down.')
     stage.moveY(CAPILLARY_Y_INTERVAL)
     click.pause(info='Check alignment and focus. Press any key to move left.')
-    stage.moveX(15000)
+    stage.moveX(10000)
     click.pause(info='Check alignment and focus. Press any key to move back to start position')
     stage.moveY(-1 * CAPILLARY_Y_INTERVAL)
     return
