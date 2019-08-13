@@ -1,11 +1,12 @@
+'''
+Custom object to control a stepper motor-based XY stage
+'''
+
 import logging
 
 from adafruit_motorkit import MotorKit
 from adafruit_motor import stepper
 from gpiozero import Button
-
-# Setup logging
-logging.basicConfig(level=logging.DEBUG, format='%(levelname)s - %(message)s')
 
 class Stage:
     '''XY stage control with stepper motors'''
@@ -36,8 +37,6 @@ class Stage:
 
         # Initialization interlock
         self.is_initialized = False
-        if self.is_initialized:
-            logging.warning("Stage is not initialized, proceed with caution, DEBUG only.")
 
     def __del__(self):
         '''Releases stepper motors on destroy'''
@@ -128,6 +127,7 @@ class Stage:
 
     def release(self):
         '''Releases all the stepper motors'''
+
         logging.debug("Released both steppers")
         self.stepperX.release()
         self.stepperY.release()
@@ -136,16 +136,18 @@ class Stage:
         '''Make sure stage is initialized and requested position is within the bounds'''
 
         if not self.is_initialized:
-            logging.warning("Initialize stage to get X and Y coordinate references before moving.")
+            logging.debug("Stage is not initialized.")
             return False
 
         if newX > self.maxX or newX < 0 or newY > self.maxY or newY < 0:
-            logging.debug("Requested position out of bounds")
+            logging.debug("Requested position out of bounds.")
             return False
 
         return True
 
     def _safe_shutdown(self):
+        '''Release both steppers and raise an error'''
+
         self.stepperX.release()
         self.stepperY.release()
         raise IOError("An error has occured, shutting down stage.")

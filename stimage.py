@@ -1,3 +1,7 @@
+'''
+Image capillary tubes repeatedly using a DLSR camera and XY stage mounted on a microscope.
+'''
+
 import datetime
 from multiprocessing import Pool
 import os
@@ -33,7 +37,6 @@ def check_alignment(stage):
     stage.moveX(10000)
     click.pause(info='Check alignment and focus. Press any key to move back to start position')
     stage.moveY(-1 * CAPILLARY_Y_INTERVAL)
-    return
 
 
 def main(duration, directory, stage=None, bCheckAlignment=False, n_tubes=1):
@@ -63,18 +66,20 @@ def main(duration, directory, stage=None, bCheckAlignment=False, n_tubes=1):
     pool = Pool(processes=1)
     async_work = None
 
-    with tqdm(desc='Time', position=0, leave=True, total=int(t_end-t_int), disable=(duration == -1)) as bar_time:
+    with tqdm(desc='Time', position=0, leave=True, total=int(t_end-t_int), disable=(duration == -1 or logging.getLogger().getEffectiveLevel() == logging.DEBUG)) as bar_time:
         while (time() < t_end) or (duration == -1):
-            with tqdm(total=n_tubes*n_img_per_tube, desc="Run #{}".format(seq_nb), position=1, leave=False) as bar_run:
+            with tqdm(total=n_tubes*n_img_per_tube, desc="Run #{}".format(seq_nb), position=1, leave=False, disable=logging.getLogger().getEffectiveLevel() == logging.DEBUG) as bar_run:
                 for i in range(n_tubes):
                     for j in range(n_img_per_tube):
 
                         # Wait for previous camera download to finish, if any
                         if async_work:
+                            logging.debug('main - Waiting for camera transfer to finish...')
                             async_work.wait()
 
                         # Capture and save a new image
                         filename = os.path.join(directory, datetime.datetime.now().strftime("%y%m%d_%H%M%S") + '_x{}_y{}_seq{}_CrystKinetics.jpg'.format(j, i, seq_nb))
+                        logging.debug('main - Starting camera worker')
                         async_work = pool.apply_async(camera_full, (filename,))
 
                         # Wait until capture is done
