@@ -84,7 +84,7 @@ def main(duration, directory, stage=None, bCheckAlignment=False, n_tubes=1):
                         async_work = pool.apply_async(camera_full, (filename,))
 
                         # Wait until capture is done
-                        sleep(1.1) # FIXME: Correct time offset if necessary.
+                        sleep(1.2) # FIXME: Correct time offset if necessary.
 
                         # Goto next imaging position
                         direction = -1 if i % 2 == 0 else 1

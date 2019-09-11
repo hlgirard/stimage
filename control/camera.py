@@ -47,7 +47,7 @@ def camera_full(savepath):
         ret, frame = cam.read()
         logging.debug("Camera - Finished read operation")
 
-
+        sleep(0.1)
 
         # ret is True if the frame was correctly received, False otherwise
         if not ret:
