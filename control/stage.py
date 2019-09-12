@@ -36,7 +36,8 @@ class Stage:
         self.maxY = 23000 # Y-axis length
 
         # Initialization interlock
-        self.is_initialized = False
+        self.is_initialized_x = False
+        self.is_initialized_y = False
 
     def __del__(self):
         '''Releases stepper motors on destroy'''
@@ -54,6 +55,8 @@ class Stage:
         self.moveX(-800, override=True)
         self.posX = self.maxX
 
+        self.is_initialized_x = True
+
 
         # Initialize Y axis
         if not x_only:
@@ -62,11 +65,7 @@ class Stage:
             self.moveY(800, override=True)
             self.posY = 0
 
-        self.is_initialized = True
-
-        # Enable safety callback that shuts the stage down if either button is pressed
-        #self.limXMaxBut.when_pressed(self._safe_shutdown)
-        #self.limYMinBut.when_pressed(self._safe_shutdown)
+            self.is_initialized_y = True
 
         logging.info("Stage initialized")
 
@@ -89,8 +88,9 @@ class Stage:
     def moveX(self, n_steps, override=False):
         '''Move stage along the X axis for n_steps'''
 
-        if not self._check_move_valid(self.posX + n_steps, self.posY) and not override:
-            return
+        if not override:
+            if not self._check_move_valid(self.posX + n_steps, self.posY):
+                return
 
         try:
             if n_steps > 0:
@@ -109,8 +109,9 @@ class Stage:
     def moveY(self, n_steps, override=False):
         '''Move stage along the Y axis for n_steps'''
 
-        if not self._check_move_valid(self.posX, self.posY + n_steps) and not override:
-            return
+        if not override:
+            if not self._check_move_valid(self.posX, self.posY + n_steps):
+                return
 
         try:
             if n_steps > 0:
@@ -136,12 +137,16 @@ class Stage:
     def _check_move_valid(self, newX, newY):
         '''Make sure stage is initialized and requested position is within the bounds'''
 
-        if not self.is_initialized:
-            logging.debug("Stage is not initialized.")
+        if (newX != self.posX) and not self.is_initialized_x:
+            logging.warning("Illegal motion: X-axis is not initialized.")
+            return False
+
+        if (newY != self.posY) and not self.is_initialized_y:
+            logging.warning("Illegal motion: Y-axis is not initialized.")
             return False
 
         if newX > self.maxX or newX < 0 or newY > self.maxY or newY < 0:
-            logging.debug("Requested position out of bounds.")
+            logging.warning("Illegal motion: Requested position out of bounds.")
             return False
 
         return True
