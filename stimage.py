@@ -24,7 +24,7 @@ def initialize_stage(x_only=False):
     stage = Stage()
 
     click.pause(info='Make sure stage is ready to initialize. Press any key to start...')
-    stage.initialize_stage(x_only)
+    stage.initialize_stage(x_only=x_only)
 
     return stage
 
@@ -86,7 +86,7 @@ def main(duration, directory, stage=None, bCheckAlignment=False, n_tubes=1, x_on
                         async_work = pool.apply_async(camera_full, (filename,))
 
                         # Wait until capture is done
-                        sleep(1.2) # FIXME: Correct time offset if necessary.
+                        sleep(2.5) # FIXME: 1.2s for D300 - 2.5s for D750
                         # Goto next imaging position
                         direction = -1 if i % 2 == 0 else 1
                         stage.moveX(direction * CAPILLARY_X_INTERVAL)
