@@ -77,8 +77,7 @@ def main(duration, directory, stage=None, bCheckAlignment=False, n_tubes=1, x_on
                         # Wait for previous camera download to finish, if any
                         if async_work:
                             logging.debug('main - Waiting for camera transfer to finish...')
-                            async_work.wait()
-                            async_work.get(timeout=10) # TODO: Test that an exception raised by the worker is passed on to the caller.
+                            async_work.get(timeout=10)
 
                         # Capture and save a new image
                         filename = os.path.join(directory, datetime.datetime.now().strftime("%y%m%d_%H%M%S") + '_x{}_y{}_seq{}_CrystKinetics.jpg'.format(j, i, seq_nb))
