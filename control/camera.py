@@ -3,6 +3,7 @@ Control a DSLR camera for image capture and transfer.
 '''
 
 import logging
+from time import sleep
 
 import cv2
 
@@ -32,6 +33,9 @@ class Camera:
         cv2.imwrite(savepath, frame)
 
 def camera_full(savepath):
+
+    res = False
+
     # Select the first available camera device
     cam = cv2.VideoCapture(0)
 
@@ -43,13 +47,19 @@ def camera_full(savepath):
         ret, frame = cam.read()
         logging.debug("Camera - Finished read operation")
 
+        sleep(0.1)
+
         # ret is True if the frame was correctly received, False otherwise
         if not ret:
             raise IOError("Cannot receive frame. Make sure camera is on and connected.")
 
         logging.debug("Camera - Writing image to disk")
         cv2.imwrite(savepath, frame)
+        
+        res = True
 
     finally:
         logging.debug("Camera - Releasing camera")
         cam.release()
+
+    return res
