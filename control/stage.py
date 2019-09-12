@@ -44,7 +44,7 @@ class Stage:
         self.stepperX.release()
         self.stepperY.release()
 
-    def initialize_stage(self):
+    def initialize_stage(self, x_only=False):
 
         logging.info("Initializing stage.")
 
@@ -56,10 +56,11 @@ class Stage:
 
 
         # Initialize Y axis
-        while not self.limYMinBut.is_pressed:
-            self.moveY(-200, override=True)
-        self.moveY(800, override=True)
-        self.posY = 0
+        if not x_only:
+            while not self.limYMinBut.is_pressed:
+                self.moveY(-200, override=True)
+            self.moveY(800, override=True)
+            self.posY = 0
 
         self.is_initialized = True
 

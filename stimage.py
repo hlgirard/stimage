@@ -19,36 +19,38 @@ CAPILLARY_LENGTH = 14400 # for 100mm capillary
 CAPILLARY_X_INTERVAL = 1800
 CAPILLARY_Y_INTERVAL = 3200
 
-def initialize_stage():
+def initialize_stage(x_only=False):
     '''Initialize stage'''
     stage = Stage()
 
     click.pause(info='Make sure stage is ready to initialize. Press any key to start...')
-    stage.initialize_stage()
+    stage.initialize_stage(x_only)
 
     return stage
 
-def check_alignment(stage):
+def check_alignment(stage, x_only=False):
     '''Moves the stage to check that the capillary holder is correcly aligned and the focus is satisfactory'''
     stage.moveX(-10000)
-    click.pause(info='Check alignment and focus. Press any key to move down.')
-    stage.moveY(CAPILLARY_Y_INTERVAL)
+    if not x_only:
+        click.pause(info='Check alignment and focus. Press any key to move down.')
+        stage.moveY(CAPILLARY_Y_INTERVAL)
     click.pause(info='Check alignment and focus. Press any key to move left.')
     stage.moveX(10000)
-    click.pause(info='Check alignment and focus. Press any key to move back to start position')
-    stage.moveY(-1 * CAPILLARY_Y_INTERVAL)
+    if not x_only:
+        click.pause(info='Check alignment and focus. Press any key to move back to start position')
+        stage.moveY(-1 * CAPILLARY_Y_INTERVAL)
 
 
-def main(duration, directory, stage=None, bCheckAlignment=False, n_tubes=1):
+def main(duration, directory, stage=None, bCheckAlignment=False, n_tubes=1, x_only=False):
 
     # Initialize stage
     if not stage:
-        stage = initialize_stage()
+        stage = initialize_stage(x_only=x_only)
 
     # Check alignment if requested
     if bCheckAlignment:
         click.pause(info='ALIGNEMENT - Align stage to the back left corner and press any key to continue...')
-        check_alignment(stage)
+        check_alignment(stage, x_only=x_only)
 
     # Start imaging loop
     x0 = stage.posX
@@ -85,7 +87,6 @@ def main(duration, directory, stage=None, bCheckAlignment=False, n_tubes=1):
 
                         # Wait until capture is done
                         sleep(1.2) # FIXME: Correct time offset if necessary.
-
                         # Goto next imaging position
                         direction = -1 if i % 2 == 0 else 1
                         stage.moveX(direction * CAPILLARY_X_INTERVAL)
@@ -111,8 +112,9 @@ def main(duration, directory, stage=None, bCheckAlignment=False, n_tubes=1):
 @click.option('-c', '--check', is_flag=True, help='Check alignment of the stage before starting')
 @click.option('-n', '--tubes', default=1, help='Number of tubes to image. Default 1')
 @click.option('-t', '--tot-time', default=1, help='Total duration of experiment in hours. -1 for unlimitted.')
+@click.option('-x', '--x-only', is_flag=True, help='Single tube mode, x-axis only.')
 @click.argument('directory', type=click.Path(), required=True)
-def cli(directory, verbose, check, tubes, tot_time):
+def cli(directory, verbose, check, tubes, tot_time, x_only):
 
     # Setup logging
     if verbose == 0:
@@ -126,7 +128,7 @@ def cli(directory, verbose, check, tubes, tot_time):
     if not os.path.isdir(directory):
         os.mkdir(directory)
 
-    main(bCheckAlignment=check, n_tubes=tubes, directory=directory, duration=tot_time)
+    main(bCheckAlignment=check, n_tubes=tubes, directory=directory, duration=tot_time, x_only=x_only)
 
 
 if __name__ == '__main__':
