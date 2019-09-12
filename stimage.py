@@ -22,7 +22,7 @@ CAPILLARY_Y_INTERVAL = 3200
 
 ## Delay between command to image and end of image capture (before stage can move)
 D300_DELAY = 1.2 # seconds
-D750_DELAY = 2.5 # seconds
+D750_DELAY = 1.6 # seconds
 
 def initialize_stage(x_only=False):
     '''Initialize stage'''
@@ -133,14 +133,12 @@ def cli(directory, verbose, check, tubes, tot_time, delay):
         os.mkdir(directory)
 
     # Extract delay
-    if delay == 300:
+    if delay == '300':
         time_delay = D300_DELAY
-    elif delay == 750:
+    elif delay == '750':
         time_delay = D750_DELAY
-    elif isinstance(delay, float):
-        time_delay = delay
     else:
-        raise ValueError("Delay value invalid.")
+        time_delay = float(delay)
 
     main(bCheckAlignment=check, n_tubes=tubes, directory=directory, duration=tot_time, delay=time_delay)
 
