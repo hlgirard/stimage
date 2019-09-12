@@ -15,9 +15,14 @@ from control.stage import Stage
 from control.camera import camera_full
 
 # Constants
+## Capillary tube length and interval between pictures
 CAPILLARY_LENGTH = 14400 # for 100mm capillary
 CAPILLARY_X_INTERVAL = 1800
 CAPILLARY_Y_INTERVAL = 3200
+
+## Delay between command to image and end of image capture (before stage can move)
+D300_DELAY = 1.2 # seconds
+D750_DELAY = 2.5 # seconds
 
 def initialize_stage(x_only=False):
     '''Initialize stage'''
@@ -41,16 +46,16 @@ def check_alignment(stage, x_only=False):
         stage.moveY(-1 * CAPILLARY_Y_INTERVAL)
 
 
-def main(duration, directory, stage=None, bCheckAlignment=False, n_tubes=1, x_only=False):
+def main(duration, directory, delay, stage=None, bCheckAlignment=False, n_tubes=1):
 
     # Initialize stage
     if not stage:
-        stage = initialize_stage(x_only=x_only)
+        stage = initialize_stage(x_only=(n_tubes == 1))
 
     # Check alignment if requested
     if bCheckAlignment:
         click.pause(info='ALIGNEMENT - Align stage to the back left corner and press any key to continue...')
-        check_alignment(stage, x_only=x_only)
+        check_alignment(stage, x_only=(n_tubes == 1))
 
     # Start imaging loop
     x0 = stage.posX
@@ -85,7 +90,7 @@ def main(duration, directory, stage=None, bCheckAlignment=False, n_tubes=1, x_on
                         async_work = pool.apply_async(camera_full, (filename,))
 
                         # Wait until capture is done
-                        sleep(2.5) # FIXME: 1.2s for D300 - 2.5s for D750
+                        sleep(delay)
                         # Goto next imaging position
                         direction = -1 if i % 2 == 0 else 1
                         stage.moveX(direction * CAPILLARY_X_INTERVAL)
@@ -110,10 +115,10 @@ def main(duration, directory, stage=None, bCheckAlignment=False, n_tubes=1, x_on
 @click.option('-v', '--verbose', count=True, help='Increase verbosity')
 @click.option('-c', '--check', is_flag=True, help='Check alignment of the stage before starting')
 @click.option('-n', '--tubes', default=1, help='Number of tubes to image. Default 1')
-@click.option('-t', '--tot-time', default=1, help='Total duration of experiment in hours. -1 for unlimitted.')
-@click.option('-x', '--x-only', is_flag=True, help='Single tube mode, x-axis only.')
+@click.option('-t', '--tot-time', default=1, help='Total duration of experiment in hours. -1 for unlimitted. Default 1.')
+@click.option('-d', '--delay', required=True, help='Delay necessary to take the picture. 300 for D300, 750 for D750, or value in seconds')
 @click.argument('directory', type=click.Path(), required=True)
-def cli(directory, verbose, check, tubes, tot_time, x_only):
+def cli(directory, verbose, check, tubes, tot_time, delay):
 
     # Setup logging
     if verbose == 0:
@@ -127,7 +132,17 @@ def cli(directory, verbose, check, tubes, tot_time, x_only):
     if not os.path.isdir(directory):
         os.mkdir(directory)
 
-    main(bCheckAlignment=check, n_tubes=tubes, directory=directory, duration=tot_time, x_only=x_only)
+    # Extract delay
+    if delay == 300:
+        time_delay = D300_DELAY
+    elif delay == 750:
+        time_delay = D750_DELAY
+    elif isinstance(delay, float):
+        time_delay = delay
+    else:
+        raise ValueError("Delay value invalid.")
+
+    main(bCheckAlignment=check, n_tubes=tubes, directory=directory, duration=tot_time, delay=time_delay)
 
 
 if __name__ == '__main__':
