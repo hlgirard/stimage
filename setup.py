@@ -15,7 +15,8 @@ setup(name='stimage',
       install_requires=[
           'click',
           'gpiozero',
-          'tqdm'
+          'tqdm',
+          'opencv-python',
       ],
       entry_points={
           'console_scripts': [

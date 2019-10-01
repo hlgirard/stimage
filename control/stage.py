@@ -156,4 +156,4 @@ class Stage:
 
         self.stepperX.release()
         self.stepperY.release()
-        raise IOError("An error has occured, shutting down stage.")
+        raise IOError("An error has occurred, shutting down stage.")
