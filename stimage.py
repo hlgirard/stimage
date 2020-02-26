@@ -16,9 +16,9 @@ from control.camera import camera_full
 
 # Constants
 ## Capillary tube length and interval between pictures
-CAPILLARY_LENGTH = 6000 # for 100mm capillary
-CAPILLARY_X_INTERVAL = 100
-CAPILLARY_Y_INTERVAL = 100
+CAPILLARY_LENGTH = 5000 # for 100mm capillary
+CAPILLARY_X_INTERVAL = 200
+CAPILLARY_Y_INTERVAL = 200
 
 ## Delay between command to image and end of image capture (before stage can move)
 D300_DELAY = 1.2 # seconds
