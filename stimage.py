@@ -35,12 +35,12 @@ def initialize_stage(x_only=False):
 
 def check_alignment(stage, x_only=False):
     '''Moves the stage to check that the capillary holder is correcly aligned and the focus is satisfactory'''
-    stage.moveX(-4000)
+    stage.moveX(-6000)
     if not x_only:
         click.pause(info='Check alignment and focus. Press any key to move down.')
         stage.moveY(CAPILLARY_Y_INTERVAL)
     click.pause(info='Check alignment and focus. Press any key to move left.')
-    stage.moveX(4000)
+    stage.moveX(6000)
     if not x_only:
         click.pause(info='Check alignment and focus. Press any key to move back to start position')
         stage.moveY(-1 * CAPILLARY_Y_INTERVAL)
