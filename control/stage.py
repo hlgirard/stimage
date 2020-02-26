@@ -32,8 +32,8 @@ class Stage:
         self.posY = 0
 
         # Axis length
-        self.maxX = 8000 # X-axis length
-        self.maxY = 8000 # Y-axis length
+        self.maxX = 7000 # X-axis length
+        self.maxY = 7000 # Y-axis length
 
         # Initialization interlock
         self.is_initialized_x = False
