@@ -32,8 +32,8 @@ class Stage:
         self.posY = 0
 
         # Axis length
-        self.maxX = 39000 # X-axis length
-        self.maxY = 23000 # Y-axis length
+        self.maxX = 4000 # X-axis length
+        self.maxY = 8000 # Y-axis length
 
         # Initialization interlock
         self.is_initialized_x = False
@@ -51,8 +51,8 @@ class Stage:
 
         # Initialize X axis
         while not self.limXMaxBut.is_pressed:
-            self.moveX(200, override=True)
-        self.moveX(-800, override=True)
+            self.moveX(50, override=True)
+        self.moveX(-100, override=True)
         self.posX = self.maxX
 
         self.is_initialized_x = True

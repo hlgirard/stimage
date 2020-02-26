@@ -16,9 +16,9 @@ from control.camera import camera_full
 
 # Constants
 ## Capillary tube length and interval between pictures
-CAPILLARY_LENGTH = 14400 # for 100mm capillary
-CAPILLARY_X_INTERVAL = 1800
-CAPILLARY_Y_INTERVAL = 3200
+CAPILLARY_LENGTH = 2500 # for 100mm capillary
+CAPILLARY_X_INTERVAL = 100
+CAPILLARY_Y_INTERVAL = 100
 
 ## Delay between command to image and end of image capture (before stage can move)
 D300_DELAY = 1.2 # seconds
@@ -35,12 +35,12 @@ def initialize_stage(x_only=False):
 
 def check_alignment(stage, x_only=False):
     '''Moves the stage to check that the capillary holder is correcly aligned and the focus is satisfactory'''
-    stage.moveX(-10000)
+    stage.moveX(-4000)
     if not x_only:
         click.pause(info='Check alignment and focus. Press any key to move down.')
         stage.moveY(CAPILLARY_Y_INTERVAL)
     click.pause(info='Check alignment and focus. Press any key to move left.')
-    stage.moveX(10000)
+    stage.moveX(4000)
     if not x_only:
         click.pause(info='Check alignment and focus. Press any key to move back to start position')
         stage.moveY(-1 * CAPILLARY_Y_INTERVAL)
