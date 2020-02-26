@@ -16,7 +16,7 @@ from control.camera import camera_full
 
 # Constants
 ## Capillary tube length and interval between pictures
-CAPILLARY_LENGTH = 2500 # for 100mm capillary
+CAPILLARY_LENGTH = 6000 # for 100mm capillary
 CAPILLARY_X_INTERVAL = 100
 CAPILLARY_Y_INTERVAL = 100
 
@@ -35,12 +35,12 @@ def initialize_stage(x_only=False):
 
 def check_alignment(stage, x_only=False):
     '''Moves the stage to check that the capillary holder is correcly aligned and the focus is satisfactory'''
-    stage.moveX(-6000)
+    stage.moveX(-8000)
     if not x_only:
         click.pause(info='Check alignment and focus. Press any key to move down.')
         stage.moveY(CAPILLARY_Y_INTERVAL)
     click.pause(info='Check alignment and focus. Press any key to move left.')
-    stage.moveX(6000)
+    stage.moveX(8000)
     if not x_only:
         click.pause(info='Check alignment and focus. Press any key to move back to start position')
         stage.moveY(-1 * CAPILLARY_Y_INTERVAL)
@@ -114,9 +114,9 @@ def main(duration, directory, delay, stage=None, bCheckAlignment=False, n_tubes=
 @click.version_option()
 @click.option('-v', '--verbose', count=True, help='Increase verbosity')
 @click.option('-c', '--check', is_flag=True, help='Check alignment of the stage before starting')
-@click.option('-n', '--tubes', default=1, help='Number of tubes to image. Default 1')
+@click.option('-n', '--tubes', default=1, help='Number of tubes to image. Default 1.')
 @click.option('-t', '--tot-time', default=1, help='Total duration of experiment in hours. -1 for unlimitted. Default 1.')
-@click.option('-d', '--delay', default=750, help='Delay necessary to take the picture. 300 for D300, 750 for D750, or value in seconds')
+@click.option('-d', '--delay', default=750, help='Delay necessary to take the picture. 300 for D300, 750 for D750, or value in seconds. Default 750.')
 @click.argument('directory', type=click.Path(), required=True)
 def cli(directory, verbose, check, tubes, tot_time, delay):
 
