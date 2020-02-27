@@ -16,7 +16,7 @@ from control.camera import camera_full
 
 # Constants
 ## Capillary tube length and interval between pictures
-CAPILLARY_LENGTH = 5000 # for 100mm capillary
+CAPILLARY_LENGTH = 4000 # for 100mm capillary
 CAPILLARY_X_INTERVAL = 200
 CAPILLARY_Y_INTERVAL = 200
 
@@ -35,12 +35,12 @@ def initialize_stage(x_only=False):
 
 def check_alignment(stage, x_only=False):
     '''Moves the stage to check that the capillary holder is correcly aligned and the focus is satisfactory'''
-    stage.moveX(-7000)
+    stage.moveX(-4000)
     if not x_only:
         click.pause(info='Check alignment and focus. Press any key to move down.')
         stage.moveY(CAPILLARY_Y_INTERVAL)
     click.pause(info='Check alignment and focus. Press any key to move left.')
-    stage.moveX(7000)
+    stage.moveX(4000)
     if not x_only:
         click.pause(info='Check alignment and focus. Press any key to move back to start position')
         stage.moveY(-1 * CAPILLARY_Y_INTERVAL)
@@ -54,8 +54,9 @@ def main(duration, directory, delay, stage=None, bCheckAlignment=False, n_tubes=
 
     # Check alignment if requested
     if bCheckAlignment:
-        click.pause(info='ALIGNEMENT - Align stage to the back left corner and press any key to continue...')
+        click.pause(info='ALIGNMENT - Align stage to the back left corner and press any key to continue...')
         check_alignment(stage, x_only=(n_tubes == 1))
+        exit
 
     # Start imaging loop
     x0 = stage.posX
