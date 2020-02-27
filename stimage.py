@@ -56,7 +56,6 @@ def main(duration, directory, delay, stage=None, bCheckAlignment=False, n_tubes=
     if bCheckAlignment:
         click.pause(info='ALIGNMENT - Align stage to the back left corner and press any key to continue...')
         check_alignment(stage, x_only=(n_tubes == 1))
-        exit
 
     # Start imaging loop
     x0 = stage.posX
