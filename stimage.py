@@ -16,13 +16,13 @@ from control.camera import camera_full
 
 # Constants
 ## Capillary tube length and interval between pictures
-CAPILLARY_LENGTH = 14400 # for 100mm capillary
-CAPILLARY_X_INTERVAL = 1800
-CAPILLARY_Y_INTERVAL = 3200
+CAPILLARY_LENGTH = 4000 # for 100mm capillary
+CAPILLARY_X_INTERVAL = 250
+CAPILLARY_Y_INTERVAL = 250
 
 ## Delay between command to image and end of image capture (before stage can move)
-D300_DELAY = 1.2 # seconds
-D750_DELAY = 1.6 # seconds
+D300_DELAY = 0.5 # seconds
+D750_DELAY = 0.2 # seconds
 
 def initialize_stage(x_only=False):
     '''Initialize stage'''
@@ -35,12 +35,12 @@ def initialize_stage(x_only=False):
 
 def check_alignment(stage, x_only=False):
     '''Moves the stage to check that the capillary holder is correcly aligned and the focus is satisfactory'''
-    stage.moveX(-10000)
+    stage.moveX(-4000)
     if not x_only:
         click.pause(info='Check alignment and focus. Press any key to move down.')
         stage.moveY(CAPILLARY_Y_INTERVAL)
     click.pause(info='Check alignment and focus. Press any key to move left.')
-    stage.moveX(10000)
+    stage.moveX(4000)
     if not x_only:
         click.pause(info='Check alignment and focus. Press any key to move back to start position')
         stage.moveY(-1 * CAPILLARY_Y_INTERVAL)
@@ -54,7 +54,7 @@ def main(duration, directory, delay, stage=None, bCheckAlignment=False, n_tubes=
 
     # Check alignment if requested
     if bCheckAlignment:
-        click.pause(info='ALIGNEMENT - Align stage to the back left corner and press any key to continue...')
+        click.pause(info='ALIGNMENT - Align stage to the back left corner and press any key to continue...')
         check_alignment(stage, x_only=(n_tubes == 1))
 
     # Start imaging loop
@@ -114,9 +114,9 @@ def main(duration, directory, delay, stage=None, bCheckAlignment=False, n_tubes=
 @click.version_option()
 @click.option('-v', '--verbose', count=True, help='Increase verbosity')
 @click.option('-c', '--check', is_flag=True, help='Check alignment of the stage before starting')
-@click.option('-n', '--tubes', default=1, help='Number of tubes to image. Default 1')
+@click.option('-n', '--tubes', default=1, help='Number of tubes to image. Default 1.')
 @click.option('-t', '--tot-time', default=1, help='Total duration of experiment in hours. -1 for unlimitted. Default 1.')
-@click.option('-d', '--delay', required=True, help='Delay necessary to take the picture. 300 for D300, 750 for D750, or value in seconds')
+@click.option('-d', '--delay', default=0.2, help='Delay necessary to take the picture. 300 for D300, 750 for D750, or value in seconds. Default 750.')
 @click.argument('directory', type=click.Path(), required=True)
 def cli(directory, verbose, check, tubes, tot_time, delay):
 
