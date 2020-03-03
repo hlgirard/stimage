@@ -95,7 +95,7 @@ def main(duration, directory, delay, stage=None, bCheckAlignment=False, n_tubes=
                         # Goto next imaging position
                         direction = -1 if i % 2 == 0 else 1
                         stage.moveX(direction * CAPILLARY_X_INTERVAL)
-                        sleep(delay)
+                        sleep(1)
 
                         # Update progress bars
                         bar_run.update(1)
