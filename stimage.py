@@ -85,7 +85,6 @@ def main(duration, directory, delay, stage=None, bCheckAlignment=False, n_tubes=
                             async_work.get(timeout=10)
 
                         # Capture and save a new image
-                        sleep(delay)
                         filename = os.path.join(directory, datetime.datetime.now().strftime("%y%m%d_%H%M%S") + '_x{}_y{}_seq{}_CrystKinetics.jpg'.format(j, i, seq_nb))
                         logging.debug('main - Starting camera worker')
                         async_work = pool.apply_async(camera_full, (filename,))
@@ -117,7 +116,7 @@ def main(duration, directory, delay, stage=None, bCheckAlignment=False, n_tubes=
 @click.option('-c', '--check', is_flag=True, help='Check alignment of the stage before starting')
 @click.option('-n', '--tubes', default=1, help='Number of tubes to image. Default 1.')
 @click.option('-t', '--tot-time', default=1, help='Total duration of experiment in hours. -1 for unlimitted. Default 1.')
-@click.option('-d', '--delay', default=0.3, help='Delay necessary to take the picture. 300 for D300, 750 for D750, or value in seconds. Default 750.')
+@click.option('-d', '--delay', default=1.2, help='Delay necessary to take the picture. 300 for D300, 750 for D750, or value in seconds. Default 750.')
 @click.argument('directory', type=click.Path(), required=True)
 def cli(directory, verbose, check, tubes, tot_time, delay):
 
