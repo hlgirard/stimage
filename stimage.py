@@ -61,7 +61,7 @@ def main(duration, directory, delay, stage=None, bCheckAlignment=False, n_tubes=
     x0 = stage.posX
     y0 = stage.posY
 
-    n_img_per_tube = CAPILLARY_LENGTH // CAPILLARY_X_INTERVAL
+    n_img_per_tube = (CAPILLARY_LENGTH // CAPILLARY_X_INTERVAL)-1
 
     click.pause("READY - Press any key to start...")
 
