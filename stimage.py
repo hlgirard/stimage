@@ -85,6 +85,7 @@ def main(duration, directory, delay, stage=None, bCheckAlignment=False, n_tubes=
                             async_work.get(timeout=10)
 
                         # Capture and save a new image
+                        sleep(delay)
                         filename = os.path.join(directory, datetime.datetime.now().strftime("%y%m%d_%H%M%S") + '_x{}_y{}_seq{}_CrystKinetics.jpg'.format(j, i, seq_nb))
                         logging.debug('main - Starting camera worker')
                         async_work = pool.apply_async(camera_full, (filename,))
