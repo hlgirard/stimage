@@ -22,7 +22,7 @@ CAPILLARY_Y_INTERVAL = 250
 
 ## Delay between command to image and end of image capture (before stage can move)
 D300_DELAY = 0.5 # seconds
-D750_DELAY = 0.3 # seconds
+D750_DELAY = 0.4 # seconds
 
 def initialize_stage(x_only=False):
     '''Initialize stage'''
@@ -78,14 +78,14 @@ def main(duration, directory, delay, stage=None, bCheckAlignment=False, n_tubes=
             with tqdm(total=n_tubes*n_img_per_tube, desc="Run #{}".format(seq_nb), position=1, leave=False, disable=logging.getLogger().getEffectiveLevel() == logging.DEBUG) as bar_run:
                 for i in range(n_tubes):
                     for j in range(n_img_per_tube):
-
+                        
+                        sleep(delay)
                         # Wait for previous camera download to finish, if any
                         if async_work:
                             logging.debug('main - Waiting for camera transfer to finish...')
                             async_work.get(timeout=10)
 
                         # Capture and save a new image
-                        sleep(delay)
                         filename = os.path.join(directory, datetime.datetime.now().strftime("%y%m%d_%H%M%S") + '_x{}_y{}_seq{}_CrystKinetics.jpg'.format(j, i, seq_nb))
                         logging.debug('main - Starting camera worker')
                         async_work = pool.apply_async(camera_full, (filename,))
@@ -95,6 +95,7 @@ def main(duration, directory, delay, stage=None, bCheckAlignment=False, n_tubes=
                         # Goto next imaging position
                         direction = -1 if i % 2 == 0 else 1
                         stage.moveX(direction * CAPILLARY_X_INTERVAL)
+                        sleep(delay)
 
                         # Update progress bars
                         bar_run.update(1)
@@ -117,7 +118,7 @@ def main(duration, directory, delay, stage=None, bCheckAlignment=False, n_tubes=
 @click.option('-c', '--check', is_flag=True, help='Check alignment of the stage before starting')
 @click.option('-n', '--tubes', default=1, help='Number of tubes to image. Default 1.')
 @click.option('-t', '--tot-time', default=1, help='Total duration of experiment in hours. -1 for unlimitted. Default 1.')
-@click.option('-d', '--delay', default=1.2, help='Delay necessary to take the picture. 300 for D300, 750 for D750, or value in seconds. Default 750.')
+@click.option('-d', '--delay', default=0.4, help='Delay necessary to take the picture. 300 for D300, 750 for D750, or value in seconds. Default 750.')
 @click.argument('directory', type=click.Path(), required=True)
 def cli(directory, verbose, check, tubes, tot_time, delay):
 
