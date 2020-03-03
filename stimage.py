@@ -22,7 +22,7 @@ CAPILLARY_Y_INTERVAL = 250
 
 ## Delay between command to image and end of image capture (before stage can move)
 D300_DELAY = 0.5 # seconds
-D750_DELAY = 0.2 # seconds
+D750_DELAY = 0.3 # seconds
 
 def initialize_stage(x_only=False):
     '''Initialize stage'''
@@ -116,7 +116,7 @@ def main(duration, directory, delay, stage=None, bCheckAlignment=False, n_tubes=
 @click.option('-c', '--check', is_flag=True, help='Check alignment of the stage before starting')
 @click.option('-n', '--tubes', default=1, help='Number of tubes to image. Default 1.')
 @click.option('-t', '--tot-time', default=1, help='Total duration of experiment in hours. -1 for unlimitted. Default 1.')
-@click.option('-d', '--delay', default=0.2, help='Delay necessary to take the picture. 300 for D300, 750 for D750, or value in seconds. Default 750.')
+@click.option('-d', '--delay', default=0.3, help='Delay necessary to take the picture. 300 for D300, 750 for D750, or value in seconds. Default 750.')
 @click.argument('directory', type=click.Path(), required=True)
 def cli(directory, verbose, check, tubes, tot_time, delay):
 
